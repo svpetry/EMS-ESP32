@@ -259,11 +259,18 @@ export const createSettingsValidator = (settings: Settings) =>
       shower_alert_coldshot: [
         {
           type: 'number',
-          min: 1,
-          max: 10,
-          message: 'Time must be between 1 and 10 seconds'
+          min: 10,
+          max: 300,
+          message: 'Time must be between 10 and 300 seconds'
         }
-      ]
+      ],
+      shower_control_entity: [
+        { 
+          type: 'string',
+          required: true, 
+          message: 'Entity name is required' 
+        }
+      ],
     }),
     ...(settings.remote_timeout_en && {
       remote_timeout: [

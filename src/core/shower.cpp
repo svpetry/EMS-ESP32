@@ -29,8 +29,10 @@ void Shower::start() {
         shower_timer_          = settings.shower_timer;
         shower_alert_          = settings.shower_alert;
         shower_alert_trigger_  = settings.shower_alert_trigger * 60; // convert from minutes to seconds
+        shower_control_entity_ = settings.shower_control_entity;
         shower_alert_coldshot_ = settings.shower_alert_coldshot;     // in seconds
         shower_min_duration_   = settings.shower_min_duration;       // in seconds
+        shower_control_entity_ = settings.shower_control_entity;
     });
 
     Command::add(
@@ -88,7 +90,7 @@ void Shower::loop() {
                 // first check to see if hot water has been on long enough to be recognized as a Shower/Bath
                 if (!shower_state_ && (time_now - timer_start_) > shower_min_duration_) {
                     set_shower_state(true);
-                    LOG_DEBUG("hot water still running, starting shower timer");
+                    LOG_INFO("hot water still running, starting shower timer");
                 }
                 // check if the shower has been on too long
                 else if ((shower_alert_ && ((time_now - timer_start_) > next_alert_)) || force_coldshot) {
@@ -150,8 +152,8 @@ void Shower::loop() {
 
 // turn off hot water to send a shot of cold
 void Shower::shower_alert_start() {
-    LOG_DEBUG("Shower Alert started");
-    (void)Command::call(EMSdevice::DeviceType::BOILER, "tapactivated", "false", DeviceValueTAG::TAG_DHW1);
+    LOG_INFO("Shower Alert started");
+    (void)Command::call(EMSdevice::DeviceType::BOILER, shower_control_entity_.c_str(), "false", DeviceValueTAG::TAG_DHW1);
     doing_cold_shot_   = true;
     force_coldshot     = false;
     alert_timer_start_ = uuid::get_uptime_sec(); // timer starts now
@@ -160,8 +162,8 @@ void Shower::shower_alert_start() {
 // turn back on the hot water for the shower
 void Shower::shower_alert_stop() {
     if (doing_cold_shot_) {
-        LOG_DEBUG("Shower Alert stopped");
-        (void)Command::call(EMSdevice::DeviceType::BOILER, "tapactivated", "true", DeviceValueTAG::TAG_DHW1);
+        LOG_INFO("Shower Alert stopped");
+        (void)Command::call(EMSdevice::DeviceType::BOILER, shower_control_entity_.c_str(), "true", DeviceValueTAG::TAG_DHW1);
         doing_cold_shot_ = false;
         force_coldshot   = false;
         next_alert_ += shower_alert_trigger_;

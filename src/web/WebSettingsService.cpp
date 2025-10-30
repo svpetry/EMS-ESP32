@@ -53,6 +53,7 @@ void WebSettings::read(WebSettings & settings, JsonObject root) {
     root["shower_alert_coldshot"] = settings.shower_alert_coldshot;
     root["shower_alert_trigger"]  = settings.shower_alert_trigger;
     root["shower_min_duration"]   = settings.shower_min_duration;
+    root["shower_control_entity"] = settings.shower_control_entity;
     root["rx_gpio"]               = settings.rx_gpio;
     root["tx_gpio"]               = settings.tx_gpio;
     root["dallas_gpio"]           = settings.dallas_gpio;
@@ -293,6 +294,12 @@ StateUpdateResult WebSettings::update(JsonObject root, WebSettings & settings) {
     prev                           = settings.shower_alert_coldshot;
     settings.shower_alert_coldshot = root["shower_alert_coldshot"] | EMSESP_DEFAULT_SHOWER_ALERT_COLDSHOT;
     check_flag(prev, settings.shower_alert_coldshot, ChangeFlags::SHOWER);
+
+    String old_shower_control_entity = settings.shower_control_entity;
+    settings.shower_control_entity = root["shower_control_entity"] | EMSESP_DEFAULT_SHOWER_CONTROL_ENTITY;
+    if (old_shower_control_entity != settings.shower_control_entity) {
+        add_flags(ChangeFlags::SHOWER);
+    }
 
     // led
     prev              = settings.hide_led;

@@ -33,6 +33,7 @@ let settings = {
   shower_alert_coldshot: 10,
   shower_alert_trigger: 7,
   shower_min_duration: 180,
+  shower_control_entity: '',
   rx_gpio: 4,
   tx_gpio: 5,
   dallas_gpio: 14,

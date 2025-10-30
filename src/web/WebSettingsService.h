@@ -41,6 +41,7 @@ class WebSettings {
     bool     shower_alert;
     uint8_t  shower_alert_trigger;  // minutes
     uint8_t  shower_alert_coldshot; // seconds
+    String   shower_control_entity;
     uint32_t shower_min_duration;   // seconds
     bool     syslog_enabled;
     int8_t   syslog_level; // uuid::log::Level

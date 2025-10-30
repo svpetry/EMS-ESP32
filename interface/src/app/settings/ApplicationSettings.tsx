@@ -831,6 +831,18 @@ const ApplicationSettings = () => {
                   disabled={!data.shower_timer}
                 />
               </Grid>
+              <Grid>
+                <ValidatedTextField
+                  fieldErrors={fieldErrors || {}}
+                  name="shower_control_entity"
+                  label="Control entity name"
+                  variant="outlined"
+                  value={data.shower_control_entity}
+                  fullWidth
+                  onChange={updateFormValue}
+                  disabled={!data.shower_timer}
+                />
+              </Grid>
             </>
           )}
         </Grid>
