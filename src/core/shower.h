@@ -50,7 +50,9 @@ class Shower {
 
     static constexpr uint32_t SHOWER_PAUSE_TIME  = 15; // 15 seconds, max time if water is switched off & on during a shower
     static constexpr uint32_t SHOWER_OFFSET_TIME = 5;  // 5 seconds grace time, to calibrate actual time under the shower
+    static constexpr uint32_t COLDSHOT_REASSERT_TIME = 1; // seconds
 
+    void shower_alert_set_dhw(bool enable);
     void shower_alert_start();
     void shower_alert_stop();
 
@@ -71,6 +73,7 @@ class Shower {
     // cold shot
     uint32_t alert_timer_start_; // sec
     bool     doing_cold_shot_;   // true if we've just sent a jolt of cold water
+    uint32_t coldshot_last_off_;  // sec, last time the DHW off command was sent
 };
 
 } // namespace emsesp

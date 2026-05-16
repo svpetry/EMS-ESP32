@@ -40,7 +40,7 @@ class WebSettings {
     bool     shower_timer;
     bool     shower_alert;
     uint8_t  shower_alert_trigger;  // minutes
-    uint8_t  shower_alert_coldshot; // seconds
+    uint16_t shower_alert_coldshot; // seconds
     String   shower_control_entity;
     uint32_t shower_min_duration;   // seconds
     bool     syslog_enabled;

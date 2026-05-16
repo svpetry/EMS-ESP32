@@ -135,6 +135,7 @@ void Shower::loop() {
                 timer_start_       = 0;
                 timer_pause_       = 0;
                 doing_cold_shot_   = false;
+                coldshot_last_off_ = 0;
                 alert_timer_start_ = 0;
 
                 set_shower_state(false);
@@ -147,13 +148,27 @@ void Shower::loop() {
     // keep repeating until the time is up
     if ((time_now - alert_timer_start_) > shower_alert_coldshot_) {
         shower_alert_stop();
+        return;
+    }
+
+    if ((time_now - coldshot_last_off_) >= COLDSHOT_REASSERT_TIME) {
+        LOG_DEBUG("Re-sending coldshot command");
+        shower_alert_set_dhw(false);
+    }
+}
+
+void Shower::shower_alert_set_dhw(const bool enable) {
+    (void)Command::call(EMSdevice::DeviceType::BOILER, shower_control_entity_.c_str(), enable ? "true" : "false", DeviceValueTAG::TAG_DHW1);
+
+    if (!enable) {
+        coldshot_last_off_ = uuid::get_uptime_sec();
     }
 }
 
 // turn off hot water to send a shot of cold
 void Shower::shower_alert_start() {
     LOG_INFO("Shower Alert started");
-    (void)Command::call(EMSdevice::DeviceType::BOILER, shower_control_entity_.c_str(), "false", DeviceValueTAG::TAG_DHW1);
+    shower_alert_set_dhw(false);
     doing_cold_shot_   = true;
     force_coldshot     = false;
     alert_timer_start_ = uuid::get_uptime_sec(); // timer starts now
@@ -163,9 +178,10 @@ void Shower::shower_alert_start() {
 void Shower::shower_alert_stop() {
     if (doing_cold_shot_) {
         LOG_INFO("Shower Alert stopped");
-        (void)Command::call(EMSdevice::DeviceType::BOILER, shower_control_entity_.c_str(), "true", DeviceValueTAG::TAG_DHW1);
-        doing_cold_shot_ = false;
-        force_coldshot   = false;
+        shower_alert_set_dhw(true);
+        doing_cold_shot_   = false;
+        force_coldshot     = false;
+        coldshot_last_off_ = 0;
         next_alert_ += shower_alert_trigger_;
     }
 }
